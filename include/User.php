@@ -10,11 +10,22 @@ class User
 		
 	}
 	
+	public function register($username, $password)
+	{
+		
+	}
+	
 	public function login($username, $password)
 	{
+		//Perform authentication here, perhaps throw some exceptions
+		//...
+		
+		//Login successful, create session
 		if(session_status() == PHP_SESSION_NONE)
 		{
 			session_start();
+			$_SESSION['username'] = $username;
+			//$_SESSION['role'] = $role;
 		}
 	}
 	
@@ -23,14 +34,20 @@ class User
 		session_destroy();
 	}
 	
+	//Returns true if the user is logged in (has an active session) otherwise, false.
+	public function isLoggedIn()
+	{
+		return session_status() == PHP_SESSION_ACTIVE;
+	}
+	
 	public function getUsername()
 	{
-		return $this->username;
+		return $_SESSION['username'];
 	}
 	
 	public function role()
 	{
-		return $this->role;
+		return $_SESSION['role'];
 	}
 }
 

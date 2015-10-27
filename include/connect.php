@@ -2,7 +2,7 @@
 
 function mysqlConnect()
 {
-	$mysqli = new mysqli('silva.computing.dundee.ac.uk', 'alexandergrey', '2015computing.mysql');
+	$mysqli = new mysqli('localhost', 'root', 'YOUR_MYSQL_PASSWORD'); //Connect without selecting a database
 	
 	if($mysqli->connect_error)
 	{
