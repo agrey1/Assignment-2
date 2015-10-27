@@ -99,7 +99,7 @@ DROP TABLE IF EXISTS `FootWearShop`.`Role` ;
 CREATE TABLE IF NOT EXISTS `FootWearShop`.`Role` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `role_name` SET('customer', 'staff', 'manager', 'admin') NOT NULL,
-  `role_description` VARCHAR(45) NULL,
+  `role_description` VARCHAR(255) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -130,11 +130,11 @@ CREATE TABLE IF NOT EXISTS `FootWearShop`.`User` (
   `last_name` VARCHAR(45) NOT NULL,
   `dob` DATE NOT NULL,
   `role_id` INT UNSIGNED NOT NULL,
-  `login` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
   `user_Info_id` INT UNSIGNED NOT NULL,
+  `date_registered` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`, `user_Info_id`, `role_id`),
   INDEX `fk_User_Role1_idx` (`role_id` ASC),
-  UNIQUE INDEX `login_UNIQUE` (`login` ASC),
   INDEX `fk_User_User_Info1_idx` (`user_Info_id` ASC),
   CONSTRAINT `fk_User_Role1`
     FOREIGN KEY (`role_id`)
@@ -319,6 +319,11 @@ CREATE TABLE IF NOT EXISTS `FootWearShop`.`User_has_Address` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- Feel free to change these descriptions!
+INSERT INTO `FootWearShop`.`Role` (`id`, `role_name`, `role_description`) VALUES (NULL, 'customer', 'Customers can order items from the store.');
+INSERT INTO `FootWearShop`.`Role` (`id`, `role_name`, `role_description`) VALUES (NULL, 'staff', 'Staff perform duties such as tracking stock.');
+INSERT INTO `FootWearShop`.`Role` (`id`, `role_name`, `role_description`) VALUES (NULL, 'manager', 'Managers are responsible for the staff.');
+INSERT INTO `FootWearShop`.`Role` (`id`, `role_name`, `role_description`) VALUES (NULL, 'admin', 'Administrators have full access.');
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
