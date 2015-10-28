@@ -11,6 +11,7 @@ class User
 	function __construct($mysqli)
 	{
 		$this->mysqli = $mysqli;
+		session_start();
 	}
 	
 	private function getRoleID($role)
@@ -82,13 +83,9 @@ class User
 			if(password_verify($password, $result['password']))
 			{
 				//Login successful, create session
-				if(session_status() == PHP_SESSION_NONE)
-				{
-					session_start();
-					$_SESSION['email'] = $email;
-					$_SESSION['role'] = $result['role_id'];
-					$loggedIn = true;
-				}
+				$_SESSION['email'] = $email;
+				$_SESSION['role'] = $result['role_id'];
+				$loggedIn = true;
 			}
 		}
 		
@@ -106,7 +103,7 @@ class User
 	//Returns true if the user is logged in (has an active session) otherwise, false.
 	public function isLoggedIn()
 	{
-		return session_status() == PHP_SESSION_ACTIVE;
+		return isset($_SESSION['email']);
 	}
 	
 	public function getEmail()
@@ -114,9 +111,10 @@ class User
 		return $_SESSION['email'];
 	}
 	
-	public function role()
+	public function getRoleName()
 	{
-		return $_SESSION['role'];
+		$mysqli = $this->mysqli;
+		return ucfirst($mysqli->query("SELECT role_name FROM Role WHERE id = '" . $_SESSION['role'] . "';")->fetch_assoc()['role_name']);
 	}
 }
 

@@ -1,10 +1,10 @@
 <?php
-$title = "Stock Levels";
+$title = "Products";
 
 include('../../include/wrapperstart.php');
 ?>
 
-<p>Display stock levels here (default/main page).</p>
+<p>Allow all staff to make changes to products.</p>
 
 <?php
 include('../../include/wrapperend.php');
