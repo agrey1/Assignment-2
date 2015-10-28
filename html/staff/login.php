@@ -1,3 +1,24 @@
+<?php
+
+/*
+if(isset($_POST['login']))
+{
+	require_once('../../include/User.php');
+	require_once('../../include/connect.php');
+	$mysqli = mysqlConnect();
+
+	$user = new User($mysqli);
+
+	if($user->isLoggedIn() == true)
+	{
+		header("Location: /staff");
+		die();
+	}
+}
+*/
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +63,7 @@
               <div class="widget-content">
                 <div class="padd">
                   <!-- Login form -->
-                  <form class="form-horizontal">
+                  <form class="form-horizontal" method="POST">
                     <!-- Email -->
                     <div class="form-group">
                       <label class="control-label col-lg-3" for="inputEmail">Email</label>
@@ -68,7 +89,7 @@
 					</div>
 					</div>
                         <div class="col-lg-9 col-lg-offset-3">
-							<button type="submit" class="btn btn-info btn-sm">Sign in</button>
+							<input name="login" type="submit" class="btn btn-info btn-sm" formmethod="post">Sign in</button>
 							<button type="reset" class="btn btn-default btn-sm">Reset</button>
 						</div>
                     <br />
@@ -78,15 +99,15 @@
                 </div>
               
                 <div class="widget-foot">
-                  Not Registred? <a href="#">Register here</a>
+                  Not Registred? Contact an administrator.</a>
                 </div>
             </div>  
       </div>
     </div>
   </div> 
 </div>
-	
-		
+
+
 
 <!-- JS -->
 <script src="js/jquery.js"></script>

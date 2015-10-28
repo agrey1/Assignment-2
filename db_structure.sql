@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `FootWearShop`.`Shoe` (
   `supplier_id` INT NOT NULL,
   `supplier_address_id` INT UNSIGNED NOT NULL,
   `supplier_supplier_info_id` INT NOT NULL,
+  `image_url` VARCHAR( 64 ) NOT NULL,
   PRIMARY KEY (`id`, `category_id`, `supplier_id`, `supplier_address_id`, `supplier_supplier_info_id`),
   INDEX `fk_Shoe_Category1_idx` (`category_id` ASC),
   CONSTRAINT `fk_Shoe_Category1`

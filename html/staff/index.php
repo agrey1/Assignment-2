@@ -1,3 +1,20 @@
+<?php
+
+/*
+require_once('../../include/User.php');
+require_once('../../include/connect.php');
+$mysqli = mysqlConnect();
+
+$user = new User($mysqli);
+
+if($user->isLoggedIn() == false)
+{
+	header("Location: /staff/login.php");
+	die();
+}
+*/
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
