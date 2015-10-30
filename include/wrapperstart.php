@@ -63,7 +63,6 @@ if($user->isLoggedIn() == false || $_SESSION['role'] < 2)
 
 <body>
 
-
 <?php
 
 include('adminHeader.php');

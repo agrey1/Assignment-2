@@ -192,7 +192,6 @@ $(function () {
             plot.highlight(item.series, item.datapoint);
         }
     });
-
 });
 
 /* Curve chart ends */
