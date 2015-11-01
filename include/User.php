@@ -40,22 +40,22 @@ class User
 	//This is to simplify the registration process.
 	//Return: void
 	//Throws exceptions
-	public function register($email, $password, $role)
+	public function register($email, $password, $role, $gender, $nationality, $firstName, $lastName)
 	{
 		$this->validateRoll($role);
 		$mysqli = $this->mysqli;
 		
 		$role = $this->getRoleID($role);
 		$email = $mysqli->escape_string($email);
-		if($this->mysqli->query("SELECT NULL FROM User_Info WHERE email_address = '$email';")->num_rows == 0)
+		if($this->mysqli->query("SELECT NULL FROM User WHERE email_address = '$email';")->num_rows == 0)
 		{
 			//Email not registered, safe to proceed
 			
-			$mysqli->query("INSERT INTO User_Info (email_address) VALUES ('$email');");
-			$userInfo = $mysqli->insert_id;
+			$mysqli->query("INSERT INTO User (email_address, password, role_id) VALUES ('$email', '$hash', '$role');");
+			$userID = $mysqli->insert_id;
 			
 			$hash = password_hash($password, PASSWORD_DEFAULT);
-			$mysqli->query("INSERT INTO User (role_id, user_info_id, password) VALUES('$role', '$userInfo', '$hash');");
+			$mysqli->query("INSERT INTO UserInfo (user_id, gender, nationality, first_name, last_name) VALUES ($userID, '$gender', '$nationality', '$firstName', '$lastName');");
 		}
 		else
 		{
@@ -72,7 +72,7 @@ class User
 		$email = $mysqli->escape_string($email);
 		$hash = password_hash($password, PASSWORD_DEFAULT);
 		
-		$result = $mysqli->query("SELECT role_id, password FROM User, User_Info WHERE User_Info.email_address = '$email' AND User.user_info_id = User_Info.id;");
+		$result = $mysqli->query("SELECT role_id, password FROM User WHERE email_address = '$email';");
 		
 		$loggedIn = false;
 		
@@ -97,6 +97,8 @@ class User
 	
 	public function logout()
 	{
+		session_start();
+		$_SESSION = array();
 		session_destroy();
 	}
 	
@@ -114,7 +116,8 @@ class User
 	public function getRoleName()
 	{
 		$mysqli = $this->mysqli;
-		return ucfirst($mysqli->query("SELECT role_name FROM Role WHERE id = '" . $_SESSION['role'] . "';")->fetch_assoc()['role_name']);
+		$roleNames = array('A' => 'Admin', 'M' => 'Manager', 'S' => 'Staff', 'C' => 'Customer');
+		return $roleNames[$mysqli->query("SELECT role_name FROM Role WHERE id = '" . $_SESSION['role'] . "';")->fetch_assoc()['role_name']];
 	}
 }
 
