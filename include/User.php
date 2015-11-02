@@ -70,7 +70,6 @@ class User
 		$mysqli = $this->mysqli;
 		
 		$email = $mysqli->escape_string($email);
-		$hash = password_hash($password, PASSWORD_DEFAULT);
 		
 		$result = $mysqli->query("SELECT role_id, password FROM User WHERE email_address = '$email';");
 		
