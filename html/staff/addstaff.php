@@ -11,6 +11,75 @@ if($_SESSION['role'] < 4)
 $title = "Add Staff";
 
 include('../../include/wrapperstart.php');
+
+$error = "";
+
+$staffTypes = array('S' => 'Regular Staff', 'M' => 'Manager', 'A' => 'Administrator');
+
+if(isset($_POST['submit']))
+{
+	$requiredFields = array('email' => 'email address', 'password1' => 'password', 'password2' => 'confirm password' 'firstName' => 'first name', 'lastName' => 'last name', 
+							'dob' => 'date of birth', 'gender', 'addr1' => 'address line 1', 'city', 'postcode', 'country', 'accountType' => 'account type');
+	
+	foreach($requiredFields as $key => $required)
+	{
+		if(is_int($key)) $key = $required;
+		
+		if(!isset($_POST[$key]))
+		{
+			$error = "Please fill in the $required field for this user.";
+			break;
+		}
+	}
+	
+	$dob = DateTime::createFromFormat('d/m/Y', $_POST['dob']);
+	
+	if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+	{
+		$error = "Please enter a valid email address.";
+	}
+	else if(strlen($_POST['password']) < 6)
+	{
+		$error = "The password should be at least 6 characters long.";
+	}
+	else if($_POST['password1'] != $_POST['password2'])
+	{
+		$error = "The two passwords do not match, please try again.";
+	}
+	else if($dob == false)
+	{
+		$error = "Please enter a valid date of birth. Example: 05/25/1985";
+	}
+	//These errors should not occur unless the user edits the HTML or we receive a malformed/malicious POST
+	else if($_POST['gender'] != 'Male' && $_POST['gender'] != 'Female')
+	{
+		$error = "Invalid gender."; 
+	}
+	else if(!in_array($_POST['accountType'], $staffTypes))
+	{
+		$error = "Invalid account type.";
+	}
+	
+	if($error == "") //The form is valid
+	{
+		$role = array_search($_POST['accountType'], $staffTypes);
+		$gender = array('Male' => 'M', 'Female' => 'F')[$_POST['gender']];
+		$addr2 = "NULL";
+		if(isset($_POST['addr2'])) $addr2 = $_POST['addr2'];
+		
+		$user->register($_POST['email'], $_POST['password'], $_POST['firstName'], $_POST['lastName'], $_POST['dob'], $gender, $_POST['addr1'], $addr2, $_POST['city'], $_POST['postcode'], $_POST['country'], $role);
+		
+		?>
+		<script>
+		alert("An account has been created for <?php echo $_POST['email']; ?>.");
+		</script>
+		<?php
+	}
+	else
+	{
+		$error = "<span style=\"color:#DF0101\">$error</span>";
+	}
+}
 ?>
 
 <script src="js/jquery.js" type="text/javascript"></script>
@@ -28,39 +97,44 @@ include('../../include/wrapperstart.php');
 
 <form method="POST" class="form-horizontal" role="form">
 	<p style="padding-bottom:10px;">Complete the form to add a new member of staff. Optional fields are marked with an asterix.</p>
+	<?php echo $error; ?>
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Email Address</label>
 			<div class="col-lg-5">
-			<input type="text" class="form-control" placeholder="name@example.com" required>
+			<input type="text" name ="email" class="form-control" placeholder="name@example.com" required>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Password</label>
-		<div class="col-lg-5">
-			<input type="password" class="form-control" required>
+		<div class="col-lg-5" style="width: 200px;">
+			<input type="password" name="password1" class="form-control" required>
+		</div>
+		<label class="col-lg-2 control-label inline" style="width:110px">Confirm Password</label>
+		<div class="col-lg-5" style="width: 200px;">
+			<input type="password" name ="password2" class="form-control" required>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">First Name</label>
 		<div class="col-lg-5" style="width: 200px;">
-			<input type="text" class="form-control" required>
+			<input type="text" name="firstName" class="form-control" required>
 		</div>
 		<label class="col-lg-2 control-label inline">Last Name</label>
 		<div class="col-lg-5" style="width: 200px;">
-			<input type="text" class="form-control" required>
+			<input type="text" name ="lastName" class="form-control" required>
 		</div>
 	</div>
-
+	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Date of Birth</label>
 		<div class="col-lg-5" style="width: 200px;">
-			<input style="width:100px;" id="dob" type="text" class="form-control" placeholder="mm/dd/yyyy" required>
+			<input style="width:100px;" name="dob" id="dob" type="text" class="form-control" placeholder="mm/dd/yyyy" required>
 		</div>
 		<label class="col-lg-2 control-label inline">Gender</label>
 		<div class="col-lg-2">
-			<select class="form-control" style="width: 120px;">
+			<select class="form-control" name ="gender" style="width: 120px;">
 				<option>Male</option>
 				<option>Female</option>
 			</select>
@@ -70,51 +144,54 @@ include('../../include/wrapperstart.php');
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Address Line 1</label>
 			<div class="col-lg-5">
-			<input type="text" class="form-control" placeholder="1 Example Road" required>
+			<input type="text" name="addr1" class="form-control" placeholder="1 Example Road" required>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Address Line 2*</label>
 			<div class="col-lg-5">
-			<input type="text" class="form-control" placeholder="Optional">
+			<input type="text" name="addr2" class="form-control" placeholder="Optional">
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Town / City</label>
 			<div class="col-lg-5">
-			<input style="width:250px;" type="text" class="form-control" placeholder="" required>
+			<input style="width:250px;" name="city" type="text" class="form-control" placeholder="" required>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Postcode</label>
 			<div class="col-lg-5">
-			<input style="width:250px;" id="postcode"type="text" class="form-control" placeholder="" required>
+			<input style="width:250px;" name="postcode" id="postcode"type="text" class="form-control" placeholder="" required>
 		</div>
 	</div>
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Country</label>
 			<div class="col-lg-5">
-			<input style="width:250px;" id="postcode"type="text" class="form-control" placeholder="" required>
+			<input style="width:250px;" name ="country" id="postcode"type="text" class="form-control" placeholder="" required>
 		</div>
 	</div>
-
+	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Account Type</label>
 		<div class="col-lg-2">
-			<select class="form-control">
-				<option>Regular Staff</option>
-				<option>Manager</option>
-				<option>Administrator</option>
+			<select class="form-control" name="accountType">
+				<?php
+				foreach($staffTypes as $type)
+				{
+					?> <option><?php echo $type; ?></option> <?php
+				}
+				?>
 			</select>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<div class="col-lg-offset-2 col-lg-6">
-			<input type="submit" class="btn btn-sm btn-default" value="Create Account"></button>
+			<input name ="submit" type="submit" class="btn btn-sm btn-default" value="Create Account"></button>
 		</div>
 	</div>
 </form>

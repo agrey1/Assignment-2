@@ -11,7 +11,11 @@ class User
 	function __construct($mysqli)
 	{
 		$this->mysqli = $mysqli;
-		session_start();
+		
+		if(!isset($_SESSION))
+		{
+			session_start();
+		}
 	}
 	
 	private function getRoleID($role)
@@ -28,7 +32,7 @@ class User
 	
 	private function validateRoll($role)
 	{
-		$validRoles = array('customer', 'staff', 'manager', 'admin');
+		$validRoles = array('C', 'S', 'M', 'A');
 		if(!in_array($role, $validRoles))
 		{
 			//This shouldn't be thrown as long as our code is correct, in which case we'll receive an error.
@@ -40,7 +44,7 @@ class User
 	//This is to simplify the registration process.
 	//Return: void
 	//Throws exceptions
-	public function register($email, $password, $role, $gender, $nationality, $firstName, $lastName)
+	public function register($email, $password, $firstName, $lastName, $dob, $gender, $addr1, $addr2, $city, $postcode, $country, $role)
 	{
 		$this->validateRoll($role);
 		$mysqli = $this->mysqli;
@@ -50,12 +54,18 @@ class User
 		if($this->mysqli->query("SELECT NULL FROM User WHERE email_address = '$email';")->num_rows == 0)
 		{
 			//Email not registered, safe to proceed
+			$hash = password_hash($password, PASSWORD_DEFAULT);
 			
-			$mysqli->query("INSERT INTO User (email_address, password, role_id) VALUES ('$email', '$hash', '$role');");
+			$today = date('Y-m-d');
+			$mysqli->query("INSERT INTO User (email_address, password, role_id, date_registered) VALUES ('$email', '$hash', '$role', '$today');");
 			$userID = $mysqli->insert_id;
 			
-			$hash = password_hash($password, PASSWORD_DEFAULT);
-			$mysqli->query("INSERT INTO UserInfo (user_id, gender, nationality, first_name, last_name) VALUES ($userID, '$gender', '$nationality', '$firstName', '$lastName');");
+			$mysqli->query("INSERT INTO UserInfo (user_id, gender, first_name, last_name) VALUES ($userID, '$gender', '$firstName', '$lastName');");
+			
+			$mysqli->query("INSERT INTO Address (first_line, second_line, city, postcode, country) VALUES ('$addr1', '$addr2', '$city', '$postcode', '$country');");
+			$addressID = $mysqli->insert_id;
+			
+			$mysqli->query("INSERT INTO UserInfo_address (userinfo_id, address_id) VALUES ($userID, $addressID);");
 		}
 		else
 		{
@@ -70,7 +80,6 @@ class User
 		$mysqli = $this->mysqli;
 		
 		$email = $mysqli->escape_string($email);
-		$hash = password_hash($password, PASSWORD_DEFAULT);
 		
 		$result = $mysqli->query("SELECT role_id, password FROM User WHERE email_address = '$email';");
 		
