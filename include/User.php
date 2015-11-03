@@ -60,12 +60,10 @@ class User
 			$mysqli->query("INSERT INTO User (email_address, password, role_id, date_registered) VALUES ('$email', '$hash', '$role', '$today');");
 			$userID = $mysqli->insert_id;
 			
-			$mysqli->query("INSERT INTO UserInfo (user_id, gender, first_name, last_name) VALUES ($userID, '$gender', '$firstName', '$lastName');");
+			$mysqli->query("INSERT INTO UserInfo (user_id, gender, first_name, last_name, dob) VALUES ($userID, '$gender', '$firstName', '$lastName', '$dob');");
+			$userInfoID = $mysqli->insert_id;
 			
-			$mysqli->query("INSERT INTO Address (first_line, second_line, city, postcode, country) VALUES ('$addr1', '$addr2', '$city', '$postcode', '$country');");
-			$addressID = $mysqli->insert_id;
-			
-			$mysqli->query("INSERT INTO UserInfo_address (userinfo_id, address_id) VALUES ($userID, $addressID);");
+			$mysqli->query("INSERT INTO Address (first_line, second_line, city, postcode, country, userinfo_id) VALUES ('$addr1', '$addr2', '$city', '$postcode', '$country', '$userID');");
 		}
 		else
 		{

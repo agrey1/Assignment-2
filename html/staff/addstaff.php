@@ -18,7 +18,7 @@ $staffTypes = array('S' => 'Regular Staff', 'M' => 'Manager', 'A' => 'Administra
 
 if(isset($_POST['submit']))
 {
-	$requiredFields = array('email' => 'email address', 'password1' => 'password', 'password2' => 'confirm password' 'firstName' => 'first name', 'lastName' => 'last name', 
+	$requiredFields = array('email' => 'email address', 'password1' => 'password', 'password2' => 'confirm password', 'firstName' => 'first name', 'lastName' => 'last name', 
 							'dob' => 'date of birth', 'gender', 'addr1' => 'address line 1', 'city', 'postcode', 'country', 'accountType' => 'account type');
 	
 	foreach($requiredFields as $key => $required)
@@ -32,19 +32,25 @@ if(isset($_POST['submit']))
 		}
 	}
 	
+	$now = new DateTime;
 	$dob = DateTime::createFromFormat('d/m/Y', $_POST['dob']);
+	$years = $dob->diff($now)->y;
 	
 	if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
 	{
 		$error = "Please enter a valid email address.";
 	}
-	else if(strlen($_POST['password']) < 6)
+	else if(strlen($_POST['password1']) < 6)
 	{
 		$error = "The password should be at least 6 characters long.";
 	}
 	else if($_POST['password1'] != $_POST['password2'])
 	{
 		$error = "The two passwords do not match, please try again.";
+	}
+	else if($years < 1 || $years > 150)
+	{
+		$error = "Please enter a date of birth within the last 150 years.";
 	}
 	else if($dob == false)
 	{
@@ -66,16 +72,25 @@ if(isset($_POST['submit']))
 		$gender = array('Male' => 'M', 'Female' => 'F')[$_POST['gender']];
 		$addr2 = "NULL";
 		if(isset($_POST['addr2'])) $addr2 = $_POST['addr2'];
+		$dob = $dob->format('Y-m-d');
 		
-		$user->register($_POST['email'], $_POST['password'], $_POST['firstName'], $_POST['lastName'], $_POST['dob'], $gender, $_POST['addr1'], $addr2, $_POST['city'], $_POST['postcode'], $_POST['country'], $role);
+		try
+		{
+			$user->register($_POST['email'], $_POST['password'], $_POST['firstName'], $_POST['lastName'], $dob, $gender, $_POST['addr1'], $addr2, $_POST['city'], $_POST['postcode'], $_POST['country'], $role);
 		
-		?>
-		<script>
-		alert("An account has been created for <?php echo $_POST['email']; ?>.");
-		</script>
-		<?php
+			?>
+			<script>
+			alert("An account has been created for <?php echo $_POST['email']; ?>.");
+			</script>
+			<?php
+		}
+		catch(Exception $e)
+		{
+			$error = $e->getMessage();
+		}
 	}
-	else
+	
+	if($error != "")
 	{
 		$error = "<span style=\"color:#DF0101\">$error</span>";
 	}
@@ -200,7 +215,7 @@ if(isset($_POST['submit']))
 jQuery(function($)
 {
 	$("#dob").mask("99/99/9999",{placeholder:"mm/dd/yyyy"});
-	$("#postcode").mask("*** ***",{placeholder:"___ ___"});
+	//$("#postcode").mask("*** ***",{placeholder:"___ ___"});
 });
 </script>
 
