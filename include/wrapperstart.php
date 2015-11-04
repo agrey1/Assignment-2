@@ -6,9 +6,15 @@ $mysqli = mysqlConnect();
 
 $user = new User($mysqli);
 
-if($user->isLoggedIn() == false || $_SESSION['role'] < 2)
+if($user->isLoggedIn() == false)
 {
 	header("Location: /staff/login.php");
+	die();
+}
+else if($_SESSION['role'] < 2)
+{
+	$user->logout();
+	header("Location: /");
 	die();
 }
 

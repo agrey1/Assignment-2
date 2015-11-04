@@ -12,6 +12,21 @@ $title = "Add Staff";
 
 include('../../include/wrapperstart.php');
 
+//Haven't finished this yet. The idea is that if there's an error, you won't have to enter everything again.
+/*
+$emailVal = "";
+$firstNameVal = "";
+$secondNameVal = "";
+$dobVal = "";
+$genderVal = "";
+$addr1Val = "";
+$addr2Val = "";
+$cityVal = "";
+$postcodeVal = "";
+$countryVal = "";
+//$accountTypeVal = "";
+*/
+
 $error = "";
 
 $staffTypes = array('S' => 'Regular Staff', 'M' => 'Manager', 'A' => 'Administrator');
@@ -76,8 +91,8 @@ if(isset($_POST['submit']))
 		
 		try
 		{
-			$user->register($_POST['email'], $_POST['password'], $_POST['firstName'], $_POST['lastName'], $dob, $gender, $_POST['addr1'], $addr2, $_POST['city'], $_POST['postcode'], $_POST['country'], $role);
-		
+			$user->register($_POST['email'], $_POST['password1'], $_POST['firstName'], $_POST['lastName'], $dob, $gender, $_POST['addr1'], $addr2, $_POST['city'], $_POST['postcode'], $_POST['country'], $role);
+			
 			?>
 			<script>
 			alert("An account has been created for <?php echo $_POST['email']; ?>.");
@@ -116,7 +131,7 @@ if(isset($_POST['submit']))
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Email Address</label>
 			<div class="col-lg-5">
-			<input type="text" name ="email" class="form-control" placeholder="name@example.com" required>
+			<input type="text" name ="email" class="form-control" placeholder="name@example.com" value="<?php echo $emailVal; ?>"required>
 		</div>
 	</div>
 	
@@ -134,18 +149,18 @@ if(isset($_POST['submit']))
 	<div class="form-group">
 		<label class="col-lg-2 control-label">First Name</label>
 		<div class="col-lg-5" style="width: 200px;">
-			<input type="text" name="firstName" class="form-control" required>
+			<input type="text" name="firstName" class="form-control" value="<?php echo $firstNameVal; ?>" required>
 		</div>
 		<label class="col-lg-2 control-label inline">Last Name</label>
 		<div class="col-lg-5" style="width: 200px;">
-			<input type="text" name ="lastName" class="form-control" required>
+			<input type="text" name ="lastName" class="form-control" value="<?php echo $secondNameVal; ?>" required>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Date of Birth</label>
 		<div class="col-lg-5" style="width: 200px;">
-			<input style="width:100px;" name="dob" id="dob" type="text" class="form-control" placeholder="mm/dd/yyyy" required>
+			<input style="width:100px;" name="dob" id="dob" type="text" class="form-control" placeholder="mm/dd/yyyy" value="<?php echo $dobVal; ?>" required>
 		</div>
 		<label class="col-lg-2 control-label inline">Gender</label>
 		<div class="col-lg-2">
@@ -159,34 +174,34 @@ if(isset($_POST['submit']))
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Address Line 1</label>
 			<div class="col-lg-5">
-			<input type="text" name="addr1" class="form-control" placeholder="1 Example Road" required>
+			<input type="text" name="addr1" class="form-control" placeholder="1 Example Road" value="<?php echo $addr1Val; ?>"required>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Address Line 2*</label>
 			<div class="col-lg-5">
-			<input type="text" name="addr2" class="form-control" placeholder="Optional">
+			<input type="text" name="addr2" class="form-control" placeholder="Optional" value="<?php echo $addr2Val; ?>">
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Town / City</label>
 			<div class="col-lg-5">
-			<input style="width:250px;" name="city" type="text" class="form-control" placeholder="" required>
+			<input style="width:250px;" name="city" type="text" class="form-control" placeholder="" value="<?php echo $cityVal; ?>" required>
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Postcode</label>
 			<div class="col-lg-5">
-			<input style="width:250px;" name="postcode" id="postcode"type="text" class="form-control" placeholder="" required>
+			<input style="width:250px;" name="postcode" id="postcode"type="text" class="form-control" placeholder="" value="<?php echo $postcodeVal; ?>" required>
 		</div>
 	</div>
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Country</label>
 			<div class="col-lg-5">
-			<input style="width:250px;" name ="country" id="postcode"type="text" class="form-control" placeholder="" required>
+			<input style="width:250px;" name ="country" id="postcode"type="text" class="form-control" placeholder="" value="<?php echo $countryVal; ?>" required>
 		</div>
 	</div>
 	
@@ -206,7 +221,7 @@ if(isset($_POST['submit']))
 	
 	<div class="form-group">
 		<div class="col-lg-offset-2 col-lg-6">
-			<input name ="submit" type="submit" class="btn btn-sm btn-default" value="Create Account"></button>
+			<input name ="submit" type="submit" class="btn btn-sm btn-default" value="Create Account">
 		</div>
 	</div>
 </form>
@@ -215,7 +230,7 @@ if(isset($_POST['submit']))
 jQuery(function($)
 {
 	$("#dob").mask("99/99/9999",{placeholder:"mm/dd/yyyy"});
-	//$("#postcode").mask("*** ***",{placeholder:"___ ___"});
+	$("#postcode").mask("*** ***",{placeholder:"___ ___"});
 });
 </script>
 
