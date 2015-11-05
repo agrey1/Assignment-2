@@ -18,6 +18,15 @@ if(isset($_POST['name']))
 	$name = $_POST['name'];
 }
 
+if(isset($_POST['edit']))
+{
+	die("Edit: " . $_POST['edit']);
+}
+else if(isset($_POST['delete']))
+{
+	die("Delete: " . $_POST['delete']);
+}
+
 $result = $mysqli->query("SELECT User.id, email_address, first_name, last_name, role_name, date_registered FROM User, Role, UserInfo WHERE (first_name LIKE '%$name%' OR last_name LIKE '%$name%') AND User.role_id > 1 AND User.role_id = Role.id AND User.id = UserInfo.user_id ORDER BY date_registered DESC;");
 
 ?>
@@ -45,6 +54,7 @@ $result = $mysqli->query("SELECT User.id, email_address, first_name, last_name, 
 					<th>Last Name</th>
 					<th>Role</th>
 					<th>Date Registered</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -66,12 +76,23 @@ $result = $mysqli->query("SELECT User.id, email_address, first_name, last_name, 
 						<td><?php echo $row['last_name']; ?></td>
 						<td><?php echo $roleName; ?></td>
 						<td><?php echo $dateRegistered; ?></td>
+						<td>
+							<form method="POST" style="display:inline-block;">
+								<input type="hidden" name="edit" value="<?php echo $row['id']; ?>">
+								<a href="" onclick="form.submit();">Edit</a>
+							</form>
+								| 
+							<form method="POST" style="display:inline-block;">
+								<input type="hidden" name="delete" value="<?php echo $row['id']; ?>">
+								<a href="" onclick="form.submit();">Delete</a>
+							</form>
+						</td>
 					</tr>
 					
 					<?php
 				}
 				?>
-
+				
 			</tbody>
 		</table>
 	</div>
