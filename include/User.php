@@ -109,6 +109,22 @@ class User
 		session_destroy();
 	}
 	
+	//Will delete this user if $id is not supplied
+	//Otherwise, the user with the specified ID is deleted
+	public function delete($id = null)
+	{
+		$mysqli = $this->mysqli;
+		
+		if($id == null)
+		{
+			$id = $mysqli->query("SELECT id FROM User WHERE email_address = '" . $this->getEmail() . "';")->fetch_assoc()['id'];
+		}
+		
+		$mysqli->query("DELETE FROM Address WHERE userinfo_id = '$id';");
+		$mysqli->query("DELETE FROM UserInfo WHERE user_id = '$id';");
+		$mysqli->query("DELETE FROM User WHERE id = '$id';");
+	}
+	
 	//Returns true if the user is logged in (has an active session) otherwise, false.
 	public function isLoggedIn()
 	{
@@ -125,6 +141,13 @@ class User
 		$mysqli = $this->mysqli;
 		$roleNames = array('A' => 'Admin', 'M' => 'Manager', 'S' => 'Staff', 'C' => 'Customer');
 		return $roleNames[$mysqli->query("SELECT role_name FROM Role WHERE id = '" . $_SESSION['role'] . "';")->fetch_assoc()['role_name']];
+	}
+	
+	//Check to see if this user's account has been deleted while they were logged in
+	public function exists()
+	{
+		$mysqli = $this->mysqli;
+		return $mysqli->query("SELECT NULL FROM User WHERE email_address = '" . $this->getEmail() . "';")->num_rows != 0;
 	}
 }
 

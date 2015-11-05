@@ -11,7 +11,7 @@ if($user->isLoggedIn() == false)
 	header("Location: /staff/login.php");
 	die();
 }
-else if($_SESSION['role'] < 2)
+else if($_SESSION['role'] < 2 || $user->exists() == false)
 {
 	$user->logout();
 	header("Location: /");
