@@ -18,11 +18,7 @@ if(isset($_POST['name']))
 	$name = $_POST['name'];
 }
 
-if(isset($_POST['edit']))
-{
-	
-}
-else if(isset($_POST['delete']))
+if(isset($_POST['delete']))
 {
 	$user->delete($_POST['delete']);
 }
@@ -64,7 +60,7 @@ $result = $mysqli->query("SELECT User.id, email_address, first_name, last_name, 
 					$dateRegistered = DateTime::createFromFormat('Y-m-d', $row['date_registered']);
 					$dateRegistered = $dateRegistered->format('d/m/Y');
 					
-					$roles = array('C' => 'Customer', 'S' => 'Regular Staff', 'M' => 'Manager', 'A' => 'Admin');
+					$roles = array('C' => 'Customer', 'S' => 'Regular Staff', 'M' => 'Manager', 'A' => 'Administrator');
 					$roleName = $roles[$row['role_name']];
 					
 					?>
@@ -77,7 +73,7 @@ $result = $mysqli->query("SELECT User.id, email_address, first_name, last_name, 
 						<td><?php echo $roleName; ?></td>
 						<td><?php echo $dateRegistered; ?></td>
 						<td>
-							<form method="POST" style="display:inline-block;">
+							<form action="addstaff.php" method="POST" style="display:inline-block;">
 								<input type="hidden" name="edit" value="<?php echo $row['id']; ?>">
 								<a href="javascript:{}" onclick="$(this).parents('form:first').submit();">Edit</a>
 							</form>

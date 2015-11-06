@@ -40,11 +40,9 @@ class User
 		}
 	}
 	
-	//I am assuming that the rest of the user's details (Name, address, etc) will be updated during their first order
-	//This is to simplify the registration process.
 	//Return: void
 	//Throws exceptions
-	public function register($email, $password, $firstName, $lastName, $dob, $gender, $addr1, $addr2, $city, $postcode, $country, $role)
+	public function register($email, $password, $firstName, $lastName, $dob, $gender, $addr1, $addr2, $city, $postcode, $country, $role, $userid = null)
 	{
 		$this->validateRoll($role);
 		$mysqli = $this->mysqli;
@@ -54,10 +52,21 @@ class User
 		if($this->mysqli->query("SELECT NULL FROM User WHERE email_address = '$email';")->num_rows == 0)
 		{
 			//Email not registered, safe to proceed
-			$hash = password_hash($password, PASSWORD_DEFAULT);
+			$hash;
+			if($userid == null)
+			{
+				$hash = password_hash($password, PASSWORD_DEFAULT);
+			}
+			else
+			{
+				$hash = $password;
+			}
+			
+			$userIDStr = "NULL";
+			if($userid != null) $userIDStr = "$userid";
 			
 			$today = date('Y-m-d');
-			$mysqli->query("INSERT INTO User (email_address, password, role_id, date_registered) VALUES ('$email', '$hash', '$role', '$today');");
+			$mysqli->query("INSERT INTO User (id, email_address, password, role_id, date_registered) VALUES ($userIDStr, '$email', '$hash', '$role', '$today');");
 			$userID = $mysqli->insert_id;
 			
 			$mysqli->query("INSERT INTO UserInfo (user_id, gender, first_name, last_name, dob) VALUES ($userID, '$gender', '$firstName', '$lastName', '$dob');");
@@ -71,8 +80,6 @@ class User
 		}
 	}
 	
-	//I have assumed that this function does not need a role parameter as the variable $_SESSION['role'] will be checked after login.
-	//If the login page is a separate page, this should be acceptable.
 	public function login($email, $password)
 	{
 		$mysqli = $this->mysqli;
@@ -104,7 +111,10 @@ class User
 	
 	public function logout()
 	{
-		session_start();
+		if(!isset($_SESSION))
+		{
+			session_start();
+		}
 		$_SESSION = array();
 		session_destroy();
 	}
