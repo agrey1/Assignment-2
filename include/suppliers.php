@@ -47,6 +47,7 @@ class  Supplier
         $mysqli->query("DELETE Address FROM Address WHERE Address.id='$addressid';");
         
         $result=$mysqli->commit();
+        //returns boolean value
 		return $result;
 	}
 	
@@ -71,16 +72,16 @@ class  Supplier
 	
 	$mysqli = $this->mysqli;
         
-        $result=$mysqli->query("UPDATE Address SET Address.first_line='$first_line', Address.second_line='$second_line', Address.city='$city', Address.postcode='$postcode', Address.country='$country' WHERE Address.id='$addressid';");
-        
-        return $result;
+        $mysqli->query("UPDATE Address SET Address.first_line='$first_line', Address.second_line='$second_line', Address.city='$city', Address.postcode='$postcode', Address.country='$country' WHERE Address.id='$addressid';");
+        //returns number of affected rows
+        return $mysqli->affected_rows;
 	}
 	public function updateSupplier($id, $supplier_name, $phonenumber, $email){
 		
 		$mysqli = $this->mysqli;
         
-        $result=$mysqli->query("UPDATE Supplier SET Supplier.supplier_name='$supplier_name',Supplier.phonenumber='$phonenumber', Supplier.email='$email' WHERE Supplier.id='$id';");
-		
-		return $result;
+        $mysqli->query("UPDATE Supplier SET Supplier.supplier_name='$supplier_name',Supplier.phonenumber='$phonenumber', Supplier.email='$email' WHERE Supplier.id='$id';");
+		//returns number of affected rows
+		return $mysqli->affected_rows;
 	}
 }

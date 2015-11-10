@@ -25,7 +25,9 @@ include('../../include/wrapperstart.php');
 				<input type="text" name="fname">
                 <input type="submit" name="searchcustomer" value="Submit">
 </form>
+<!--
             <p> '*' to search all users</p>
+-->
 
 <p>Allow admins and managers to make changes to customer accounts. (View, delete, edit)</p>
 
@@ -33,8 +35,10 @@ include('../../include/wrapperstart.php');
 if(isset($_POST['fname']))
 {	
 	$staff = new Staff($mysqli);
-	
-		$result=$staff->getCustomers($_POST['fname']);	
+		
+		$fname=$mysqli->escape_string($_POST['fname']);	
+		$result=$staff->getCustomers($fname);	
+		
 		if($result->num_rows != 0){
 			?>
 			  <br/>
@@ -92,27 +96,29 @@ if(isset($_POST['fname']))
 //debug
 printf("Select returned %d rows. <br/>", $result->num_rows);
 
-$user_id=$_REQUEST['id'];
-$_SESSION['user_id'] = $user_id;
-
+$id=$_REQUEST['id'];
+$_SESSION['user_id'] = $id;
+$user_id=$mysqli->escape_string($id);
 $result=$staff->getUserDetails($user_id);
 $row = $result->fetch_assoc();
 if ($row!=null) { 
 	?>
 		<div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-7 col-xs-offset-2">
+			<div class="container center-block" style="background-color: #ededed;">
+				<br/>
 	<h3>Edit Profile Values</h3>
      <form action="/staff/customers.php" method="POST">
              <div class="form-group">
                     <label for="first_name"> First Name: </label>  
-                    <input type="text" name="first_name" size="25" class="form-control" value="<?php echo $row["first_name"];?>">
+                    <input type="text" name="first_name" size="25" class="form-control" value="<?php echo $row["first_name"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="last_name"> Last Name: </label>  
-                    <input type="text" name="last_name" size="25" class="form-control" value="<?php echo $row["last_name"];?>">
+                    <input type="text" name="last_name" size="25" class="form-control" value="<?php echo $row["last_name"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="nationality"> Nationality: </label>  
-                    <input type="text" name="nationality" class="form-control" value="<?php echo $row["nationality"];?>">
+                    <input type="text" name="nationality" class="form-control" value="<?php echo $row["nationality"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="gender"> Gender: </label>  
@@ -127,17 +133,18 @@ if ($row!=null) {
                 </div>
                 <div class="form-group">
                     <label for="dob"> Date of Birth: </label>  
-                    <input id="dob" name="dob" type="text" style="width:100px;" class="form-control" value="<?php echo $row["dob"];?>">
+                    <input id="dob" name="dob" type="text" style="width:100px;" class="form-control" value="<?php echo $row["dob"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="password"> Password: </label>  
-                    <input id="password"  name='password' type="password" style="width:100px;" class="form-control">
+                    <input id="password"  name='password' type="password" style="width:100px;" class="form-control" value="">
                 </div>
 
                 <button type="submit" name="editvalues" value="Edit Values" class="btn btn-default">Edit Values</button>
             </form>
+            <br/>
 </div>
-
+</div>
 
 
 <?php
@@ -146,24 +153,23 @@ if ($row!=null) {
 
 }elseif ($_POST['delete']){
 	/*******DEBUUG ***/
-	ini_set("log_errors", 1);
-	ini_set("error_log", "/tmp/php-error.log");
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
 	/****** END DEBUG*****/
 	
 	$staff = new Staff($mysqli);
-	//debug
-//printf("Select returned %d rows. <br/>", $result->num_rows);
-$user_id=$_REQUEST['id'];
-//end debug
 
-	
+	$id=$_REQUEST['id'];
+	$user_id=$mysqli->escape_string($id);
 	
 	$result=$staff->deleteCustomer($user_id);
 	//error_log( "ERRORRR " . (string)$result);
 	if($result == 0){
 	 echo "Echo Customer cannot be deleted";
 	die();
-	} 
+	}else{
+	echo "<br/> Customer has been deleted!";
+	}  
 
 }elseif($_POST['editvalues']){
 	/*******DEBUUG ***/
@@ -173,21 +179,38 @@ $user_id=$_REQUEST['id'];
 	
 	$staff = new Staff($mysqli);
 	
-	$user_id= $_SESSION['user_id'];
+	$id= $_SESSION['user_id'];
 	
 	
-    $dateFormated = explode("/", $_REQUEST['dob']);
+	
+
+    $dateFormated = explode("/", $mysqli->escape_string($_REQUEST['dob']));
     $date = $dateFormated[2].'-'.$dateFormated[0].'-'.$dateFormated[1];
 	
-	error_log("DOBBB " . $date);
+	
+	$user_id=$mysqli->escape_string($id);
+	$first_name=$mysqli->escape_string($_REQUEST['first_name']);
+	$last_name=$mysqli->escape_string($_REQUEST['last_name']);
+	$gender=$mysqli->escape_string($_REQUEST['gender']);
+	$nationality=$mysqli->escape_string($_REQUEST['nationality']);
 	
 	if($_REQUEST['password']==""){
-	$result=$staff->updateCustomer($_REQUEST['first_name'], $_REQUEST['last_name'],$_REQUEST['gender'], $_REQUEST['nationality'], $date,$user_id);
+	$result=$staff->updateCustomer($first_name, $last_name,$gender, $nationality, $date, $user_id);
 	}else{
-	$result=$staff->updateCustomerPsw($_REQUEST['first_name'], $_REQUEST['last_name'], $_REQUEST['gender'], $_REQUEST['nationality'], $date, $_REQUEST['password'], $user_id);
+	$password=$mysqli->escape_string($_REQUEST['password']);
+	$result=$staff->updateCustomerPsw($first_name, $last_name, $gender, $nationality, $date, $password, $user_id);
 	}
+	
+	//error_log("AFFECTED ROWS" . (string)$result);
 	//Remove Variable from session
-	$unset($_SESSION['user_id']);
+	unset($_SESSION['user_id']);
+	
+	if($result == 0){
+		echo "No Customer has been updated!";
+		die();
+	}else{
+	echo "<br/> Customer Profile has been updated!";
+	} 
 }
 ?>
 <script>

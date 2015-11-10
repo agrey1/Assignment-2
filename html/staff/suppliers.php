@@ -39,22 +39,21 @@ include('../../include/wrapperstart.php');
 <?php
 if(isset($_POST['fname'])){
 	/*******DEBUUG ***/
-	ini_set("log_errors", 1);
-	ini_set("error_log", "/tmp/php-error.log");
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
 	/****** END DEBUG*****/
 		
 		$suppliers = new Supplier($mysqli);
 	
-	//~ error_log($_REQUEST['searchby']);
-	//~ error_log("TEST FNAME " . $_REQUEST['fname']);
+	
 	$searchby= $_REQUEST['searchby'];
+	$fname=$mysqli->escape_string($_REQUEST['fname']);
 	if($searchby=="byname"){
-		$result=$suppliers->getSupplierbyName($_REQUEST['fname']);
+		$result=$suppliers->getSupplierbyName($fname);
 	}else if($searchby=="byshoe"){
-		$result=$suppliers->getSupplierbyShoe($_REQUEST['fname']);	
+		$result=$suppliers->getSupplierbyShoe($fname);	
 	}
 	
-		//$result=$suppliers->getSuppliers($_POST['fname']);	
 		if($result->num_rows != 0){
 			?>
 			  <br/>
@@ -161,25 +160,40 @@ if(isset($_POST['fname'])){
 <?php 
 }else if(isset($_POST['submitsupplier'])){
 	/*******DEBUUG ***/
-	ini_set("log_errors", 1);
-	ini_set("error_log", "/tmp/php-error.log");
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
 	/****** END DEBUG*****/
 	$suppliers = new Supplier($mysqli);
 	
 	//error_log($_REQUEST['supplier_name']. " " .$_REQUEST['phonenumber']. " " .$_REQUEST['email']. " " .$_REQUEST['first_line']. " " .$_REQUEST['second_line']. " " .$_REQUEST['postcode']. " " .$_REQUEST['city']. " " .$_REQUEST['country']);
-	$result=$suppliers->addSupplier($_REQUEST['supplier_name'],$_REQUEST['phonenumber'],$_REQUEST['email'],$_REQUEST['first_line'],$_REQUEST['second_line'],$_REQUEST['postcode'],$_REQUEST['city'],$_REQUEST['country']);
-	if($result->affected_rows() == 0){
-	echo "Error Supplier cannot be inserted";
+	$supplier_name=$mysqli->escape_string($_REQUEST['supplier_name']);
+	$phonenumber=$mysqli->escape_string($_REQUEST['phonenumber']);
+	$email=$mysqli->escape_string($_REQUEST['email']);
+	$first_line=$mysqli->escape_string($_REQUEST['frst_line']);
+	$second_line=$mysqli->escape_string($_REQUEST['second_line']);
+	$postcode=$mysqli->escape_string($_REQUEST['postcode']);
+	$city=$mysqli->escape_string($_REQUEST['city']);
+	$country=$mysqli->escape_string($_REQUEST['country']);
+	$result=$suppliers->addSupplier($supplier_name, $phonenumber, $email ,$first_line,$second_line,$postcode ,$city ,$country);
+	
+	//returns boolean
+	if($result == 0){
+	echo "Error - Supplier cannot be added!";
 	die();
-	}
+	}else{
+	echo "<br/> Supplier has been added!";
+	} 
 }else if(isset($_POST['edit'])){
 	/*******DEBUUG ***/
-	ini_set("log_errors", 1);
-	ini_set("error_log", "/tmp/php-error.log");
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
 	/****** END DEBUG*****/
 
 	$suppliers = new Supplier($mysqli);
-	$result=$suppliers->getSupplierbyName($_REQUEST['name']);
+	
+	$name=$mysqli->escape_string($_REQUEST['name']);
+	$result=$suppliers->getSupplierbyName($name);
+	
 	if($result->num_rows != 0){ 
 		$row = $result->fetch_assoc();?>
 		<br/>
@@ -242,43 +256,71 @@ if(isset($_POST['fname'])){
 	<?php } 
 }else if(isset($_POST['editaddress'])){
 	/*******DEBUUG ***/
-	ini_set("log_errors", 1);
-	ini_set("error_log", "/tmp/php-error.log");
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
 	/****** END DEBUG*****/
 	$suppliers = new Supplier($mysqli);
-	error_log(" ID" . $_REQUEST['addressid']. " " .$_REQUEST['first_line'].$_REQUEST['second_line'].$_REQUEST['city'].$_REQUEST['postcode'].$_REQUEST['country']);
-	$result=$suppliers->updateSupplierAddress($_REQUEST['addressid'],$_REQUEST['first_line'],$_REQUEST['second_line'],$_REQUEST['city'],$_REQUEST['postcode'],$_REQUEST['country']);
-	if($result->affected_rows() == 0){
+	
+	//error_log(" ID" . $_REQUEST['addressid']. " " .$_REQUEST['first_line'].$_REQUEST['second_line'].$_REQUEST['city'].$_REQUEST['postcode'].$_REQUEST['country']);
+	
+	$first_line=$mysqli->escape_string($_REQUEST['first_line']);
+	$second_line=$mysqli->escape_string($_REQUEST['second_line']);
+	$city=$mysqli->escape_string($_REQUEST['city']);
+	$postcode=$mysqli->escape_string($_REQUEST['postcode']);
+	$country=$mysqli->escape_string($_REQUEST['country']);
+	
+	$addressid=$mysqli->escape_string($_REQUEST['addressid']); //This is probably not necessary
+	
+	$result=$suppliers->updateSupplierAddress($addressid,$first_line,$second_line,$city,$postcode,$country);
+	if($result == 0){
 		echo "No Address has been updated!";
 		die();
-	}
+	}else{
+	echo "<br/> Address has been updated!";
+	} 
 	
 
 
 }else if(isset($_POST['editsupplier'])){
 	/*******DEBUUG ***/
-	ini_set("log_errors", 1);
-	ini_set("error_log", "/tmp/php-error.log");
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
 	/****** END DEBUG*****/
 	$suppliers = new Supplier($mysqli);
 	//~ //error_log("Supplier " . $_REQUEST['id']. " " . $_REQUEST['addressid']);
-	$result=$suppliers->updateSupplier($_REQUEST['id'], $_REQUEST['supplier_name'], $_REQUEST['phonenumber'], $_REQUEST['email']);
-	if($result->affected_rows() == 0){
+	
+	$id=$mysqli->escape_string($_REQUEST['id']);
+	$supplier_name=$mysqli->escape_string($_REQUEST['supplier_name']);
+	$phonenumber=$mysqli->escape_string($_REQUEST['phonenumber']);
+	$email=$mysqli->escape_string($_REQUEST['email']);
+	
+	$result=$suppliers->updateSupplier($id, $supplier_name, $phonenumber, $email);
+	
+	if($result == 0){
 		echo "No Supplier has been updated!";
 		die();
-	}
+	}else{
+	echo "<br/> Supplier has been updated!";
+	} 
 }else if(isset($_POST['delete'])){
 
-/*******DEBUUG ***/
-	ini_set("log_errors", 1);
-	ini_set("error_log", "/tmp/php-error.log");
+	/*******DEBUUG ***/
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
 	/****** END DEBUG*****/
 	$suppliers = new Supplier($mysqli);
-	$result=$suppliers->deleteSupplier($_REQUEST['id'], $_REQUEST['addressid']);
+	
+	$id=$mysqli->escape_string($_REQUEST['id']);
+	$addressid=$id=$mysqli->escape_string($_REQUEST['addressid']);
+	$result=$suppliers->deleteSupplier($id, $addressid);
+	
+	//returns boolean
 	if($result == 0){
 		echo "No Supplier has been deleted!";
 		die();
-	}
+	}else{
+	echo "<br/> Supplier has been deleted!";
+	} 
 }
 ?>
 <script>
