@@ -27,6 +27,16 @@ $result = $mysqli->query("SELECT User.id, email_address, first_name, last_name, 
 
 ?>
 
+<script>
+function confirmDelete(form, account)
+{
+	if(confirm("Are you sure that you wish to delete " + account + "?\n\nClick OK to continue.") == true) 
+	{
+		form.submit();
+	}
+}
+</script>
+
 <form method="POST" class="form-horizontal" role="form">
 	<p style="padding-bottom:10px;">Filter by name <i>(The first and last name will be searched)</i>:</p>
 	<div class="form-group">
@@ -80,7 +90,7 @@ $result = $mysqli->query("SELECT User.id, email_address, first_name, last_name, 
 								| 
 							<form method="POST" style="display:inline-block;">
 								<input type="hidden" name="delete" value="<?php echo $row['id']; ?>">
-								<a href="javascript:{}" onclick="$(this).parents('form:first').submit();">Delete</a>
+								<a href="javascript:{}" onclick="confirmDelete($(this).parents('form:first'), '<?php echo $row['email_address']; ?>');">Delete</a>
 							</form>
 						</td>
 					</tr>
