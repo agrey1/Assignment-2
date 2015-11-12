@@ -30,7 +30,7 @@ if(isset($_POST['edit']))
 	
 	require_once('../../include/connect.php');
 	$mysqli = mysqlConnect();
-	$result = $mysqli->query("SELECT first_name, last_name FROM UserInfo WHERE user_id = '" . $_POST['edit'] . "';")->fetch_assoc();
+	$result = $mysqli->query("SELECT first_name, last_name FROM UserInfo WHERE user_id = '" . $mysqli->escape_string($_POST['edit']) . "';")->fetch_assoc();
 	$title = "Edit Account: " . $result['first_name'] . " " . $result['last_name'];
 }
 
@@ -43,6 +43,7 @@ include('../../include/wrapperstart.php');
 if(isset($_POST['edit']))
 {
 	$userid = $_POST['edit'];
+	$useridQuery = $mysqli->escape_string($userid);
 	$result = $mysqli->query("SELECT * FROM User, Role, UserInfo, Address WHERE User.role_id > 1 AND User.role_id = Role.id AND User.id = UserInfo.user_id AND User.id = '$userid' AND userinfo_id = '$userid';")->fetch_assoc();
 	$values['email'] = $result['email_address'];
 	$values['firstName'] = $result['first_name'];
@@ -140,7 +141,8 @@ else if(isset($_POST['submit']))
 			if($edit == true)
 			{
 				$userid = $_POST['edit'];
-				$result = $mysqli->query("SELECT id, password FROM User WHERE email_address = '{$_POST['email']}';")->fetch_assoc();
+				$emailQuery = $mysqli->escape_string($_POST['email']);
+				$result = $mysqli->query("SELECT id, password FROM User WHERE email_address = '$emailQuery';")->fetch_assoc();
 				$userid = $result['id'];
 				$_POST['password1'] = $result['password'];
 				
