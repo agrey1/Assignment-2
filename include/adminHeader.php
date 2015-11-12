@@ -200,7 +200,6 @@
 		if($_SESSION['role'] >= 3)
 		{
 			?>
-			<li><a href="orderstock.php"><i class="fa fa-bar-chart-o"></i>Order Stock</a></li>
 			<li><a href="suppliers.php"><i class="fa fa-bar-chart-o"></i>Suppliers</a></li>
 			<li><a href="customers.php"><i class="fa fa-bar-chart-o"></i>Manage Customers</a></li>
 			<?php

@@ -3,53 +3,72 @@
 $title = "Customer Orders";
 
 include('../../include/wrapperstart.php');
+
+$result = $mysqli->query("SELECT * FROM `Order`;");
+
 ?>
 
-<p>Allow all staff to view, delete and edit orders. (Orders that the customers have placed)</p>
-
-<?php
-/*
-$servername = "localhost";
-$username = "username";
-$password = "";
-$dbname = "myDB";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
-if ($conn->connect_error) {
-     die("Connection failed: " . $conn->connect_error);
-}
-*/
-$sql = "SELECT * FROM `Order`";
-$result = $mysqli->query($sql);
-
-if ($result->num_rows > 0) {
-     // output data of each row
-     while($row = $result->fetch_assoc()) {
-          echo "<br> id: ". $row["id"]. " - date placed: ". $row["date_placed"]. " - date dispatched " . $row["date_dispatched"] . "<br>";
-		  ?>		  
-		  <a href="Delete_order.php?id=<?php echo $row["id"]; ?>">Delete order</a><br>
-		  
-		  <?php
-		  $shoeid=$row["id"];
-		  $sql2 = "SELECT * FROM `Order_shoe` WHERE `order_id` = '$shoeid'";
-          $result2 = $mysqli->query($sql2);
-		  
-		  if ($result->num_rows > 0) {
-                // output data of each row
-                while($row2 = $result2->fetch_assoc()) {
-                      echo "<br> id: ". $row2["id"]. " - shoe id: ". $row2["shoe_id"]. "<br>";
+<div class="table-responsive">
+	<table class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>Order ID</th>
+				<th>Items</th>
+				<th>Date Placed</th>
+				<th>Date Dispatched</th>
+				<th>Status</th>
+				<th>Delete</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			while($row = $result->fetch_assoc())
+			{
+				$datePlaced = DateTime::createFromFormat('Y-m-d H:i:s', $row['date_placed']);
+				$datePlaced = $datePlaced->format('d/m/Y H:i:s');
+				
+				$dateDispatched = DateTime::createFromFormat('Y-m-d H:i:s', $row['date_dispatched']);
+				if($dateDispatched != false)
+				{
+					$dateDispatched = $dateDispatched->format('d/m/Y H:i:s');
 				}
-		  }
-     }
-} else {
-     echo "0 results";
-}
-
-//$conn->close();
-?>  
-
+				else
+				{
+					$dateDispatched = "Not Dispatched";
+				}
+				
+				$orderID = $row['id'];
+				$shoeResult = $mysqli->query("SELECT shoe_id FROM Order_shoe WHERE order_id = '$orderID';");
+				
+				$items = "";
+				while($shoeID = $shoeResult->fetch_assoc()['shoe_id'])
+				{
+					$shoeName = $mysqli->query("SELECT shoe_name FROM Shoe WHERE id = '$shoeID';")->fetch_row()[0];
+					$items .= $shoeName . ", ";
+				}
+				
+				$items = substr($items, 0, strlen($items) - 2);
+				
+				?>
+				
+				<tr>
+					<td><?php echo $row['id']; ?></td>
+					<td><?php echo $items; ?></td>
+					<td><?php echo $datePlaced; ?></td>
+					<td><?php echo $dateDispatched; ?></td>
+					<td><?php echo $row['status']; ?></td>
+					<td>
+						<a href="Delete_order.php?id=<?php echo $row["id"]; ?>">Delete</a><br>
+					</td>
+				</tr>
+				
+				<?php
+			}
+			?>
+			
+		</tbody>
+	</table>
+</div>
 
 <?php
 include('../../include/wrapperend.php');

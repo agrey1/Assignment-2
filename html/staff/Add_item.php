@@ -11,15 +11,16 @@ if($mysqli->connect_error)
 }
 */
 	
-	$name = $_POST['shoe_name'];
-	$size = $_POST['size'];
-	$color = $_POST['color'];
-	$price = $_POST['price'];
-	$supplier_id = $_POST['supplier_id'];
+	$name = $mysqli->escape_string($_POST['shoe_name']);
+	$size = $mysqli->escape_string($_POST['size']);
+	$color = $mysqli->escape_string($_POST['color']);
+	$price = $mysqli->escape_string($_POST['price']);
+	$supplier_id = $mysqli->escape_string($_POST['supplier_id']);
 	$Url = "img/" . $_FILES["file"]["name"];
+	$urlInsert = $mysqli->escape_string($Url);
 	
 	$sql1 = "INSERT INTO `Shoe_supplier` (`shoe_id`, `supplier_id`) VALUES (LAST_INSERT_ID(), '$supplier_id');";
-	$sql2 = "INSERT INTO `Shoe` (`shoe_name`, `size`, `color`, `quantity`, `price`, `image_url`) VALUES ('$name ', '$size', '$color', '0', '$price', '$Url');";
+	$sql2 = "INSERT INTO `Shoe` (`shoe_name`, `size`, `color`, `quantity`, `price`, `image_url`) VALUES ('$name ', '$size', '$color', '0', '$price', '$urlInsert');";
 	
 	$result2 = $mysqli->query($sql2);
 	$result1 = $mysqli->query($sql1);

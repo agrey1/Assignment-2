@@ -9,7 +9,7 @@ $mysqli = new mysqli('localhost', 'root', '', 'FootWearShop'); //Connect and sel
 	
 
 
-	$id = $_GET['id'];
+	$id = $mysqli->escape_string($_GET['id']);
 	$sql1 = "DELETE FROM `order_shoe` WHERE order_id='$id'";
      $sql2 = "DELETE FROM `order` WHERE id='$id'";
      $result2 = $mysqli->query($sql1);
