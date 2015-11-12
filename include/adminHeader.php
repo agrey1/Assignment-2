@@ -192,6 +192,7 @@
 		<!-- If the main navigation has sub navigation, then add the class "has_sub" to "li" of main navigation. -->
 		<ul id="nav">
 		<li><a href="/staff"><i class="fa fa-home"></i>Stock Levels</a></li>
+		<li><a href="metaData.php"><i class="fa fa-home"></i>Demographics</a></li>
 		<li><a href="products.php"><i class="fa fa-bar-chart-o"></i>Manage Products</a></li>
 		<li><a href="orders.php"><i class="fa fa-bar-chart-o"></i>Customer Orders</a></li>
 		<!-- class="open" -->
