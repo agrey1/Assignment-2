@@ -130,9 +130,21 @@ class User
 			$id = $mysqli->query("SELECT id FROM User WHERE email_address = '" . $this->getEmail() . "';")->fetch_assoc()['id'];
 		}
 		
-		$mysqli->query("DELETE FROM Address WHERE userinfo_id = '$id';");
-		$mysqli->query("DELETE FROM UserInfo WHERE user_id = '$id';");
-		$mysqli->query("DELETE FROM User WHERE id = '$id';");
+		$mysqli->autocommit(true);
+		
+		try
+		{
+			$mysqli->query("DELETE FROM Address WHERE userinfo_id = '$id';")or throw new Exception('');
+			$mysqli->query("DELETE FROM UserInfo WHERE user_id = '$id';")or throw new Exception('');
+			$mysqli->query("DELETE FROM User WHERE id = '$id';")or throw new Exception('');
+		}
+		catch(Exception $e)
+		{
+			$mysqli->rollback();
+		}
+		
+		$mysqli->commit();
+		$mysqli->autocommit(false);
 	}
 	
 	//Returns true if the user is logged in (has an active session) otherwise, false.
