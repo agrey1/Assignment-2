@@ -24,7 +24,7 @@ class  Supplier
 	{
         $mysqli = $this->mysqli;
 
-        $result = $mysqli->query("SELECT distinct Supplier.supplier_name, Supplier.address_id, Supplier.phonenumber, Supplier.email, Address.first_line, Address.second_line, Address.postcode, Address.city, Address.country  from Supplier, Address, Shoe_supplier, Shoe  WHERE Supplier.address_id=Address.id and Supplier.id= Shoe_supplier.supplier_id and Shoe_supplier.shoe_id=Shoe.id and Shoe.shoe_name='$name';");
+        $result = $mysqli->query("SELECT distinct Supplier.id, Supplier.supplier_name, Supplier.address_id, Supplier.phonenumber, Supplier.email, Address.first_line, Address.second_line, Address.postcode, Address.city, Address.country  from Supplier, Address, Shoe_supplier, Shoe  WHERE Supplier.address_id=Address.id and Supplier.id= Shoe_supplier.supplier_id and Shoe_supplier.shoe_id=Shoe.id and Shoe.shoe_name='$name';");
         		
 		return $result;
 	}
