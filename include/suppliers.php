@@ -389,7 +389,7 @@ if(isset($_POST['fname'])){
 jQuery(function($)
 {
 	$("#postcode").mask("*** ***",{placeholder:"___ ___"});
-	$("#phonenumber").mask("0099 999-9999999");
+	$("#phonenumber").mask("0099 9999999999");
 });
 </script>
 <?php
