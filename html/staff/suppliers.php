@@ -212,7 +212,7 @@ if(isset($_POST['fname'])){
 		exit();
 	}
 	if(!isphonenumberValid($phonenumber)){
-	echo "Postnumber format wrong or length exceeded";
+	echo "Phone number format wrong or length exceeded";
 		exit();
 	}
 	
@@ -283,7 +283,7 @@ if(isset($_POST['fname'])){
                 </div>
                 <div class="form-group">
                     <label for="phonenumber"> Phone Number: </label>  
-                    <input type="text" name="phonenumber" style="width:250px;" maxlength="16" class="form-control" value="<?php echo $row["phonenumber"];?>" required>
+                    <input  type="text" name="phonenumber" style="width:250px;" maxlength="16" class="form-control" value="<?php echo $row["phonenumber"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="email"> Email: </label>  
@@ -389,7 +389,7 @@ if(isset($_POST['fname'])){
 jQuery(function($)
 {
 	$("#postcode").mask("*** ***",{placeholder:"___ ___"});
-	$("#phonenumber").mask("0099 999-9999999");
+	$("#phonenumber").mask("0099 9999999999");
 });
 </script>
 <?php
