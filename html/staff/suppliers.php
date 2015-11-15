@@ -373,7 +373,8 @@ if(isset($_POST['fname'])){
 	$suppliers = new Supplier($mysqli);
 	
 	$id=$mysqli->escape_string($_REQUEST['id']);
-	$addressid=$id=$mysqli->escape_string($_REQUEST['addressid']);
+	$addressid=$mysqli->escape_string($_REQUEST['addressid']);
+	//error_log("LOG " . (string)$id );
 	$result=$suppliers->deleteSupplier($id, $addressid);
 	
 	//returns boolean
