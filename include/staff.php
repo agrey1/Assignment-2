@@ -32,9 +32,21 @@ class  Staff
 	{
 		$mysqli = $this->mysqli;
 		
-		$mysqli->query("DELETE FROM Address WHERE userinfo_id = '$id';");
-		$mysqli->query("DELETE FROM UserInfo WHERE user_id = '$id';");
-		$mysqli->query("DELETE FROM User WHERE id = '$id';");
+		$mysqli->autocommit(true);
+		
+		try
+		{
+			$mysqli->query("DELETE FROM Address WHERE userinfo_id = '$id';")or throw new Exception('');
+			$mysqli->query("DELETE FROM UserInfo WHERE user_id = '$id';")or throw new Exception('');
+			$mysqli->query("DELETE FROM User WHERE id = '$id';")or throw new Exception('');
+		}
+		catch(Exception $e)
+		{
+			$mysqli->rollback();
+		}
+		
+		$mysqli->commit();
+		$mysqli->autocommit(false);
 		
 		return $mysqli->affected_rows;
 	}
