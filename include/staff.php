@@ -28,11 +28,13 @@ class  Staff
         		
 		return $result;
 	}
-	public function deleteCustomer($id){
-	
-		$mysqli =$this->mysqli;
+	public function deleteCustomer($id)
+	{
+		$mysqli = $this->mysqli;
 		
-		$mysqli->query("DELETE UserInfo, User FROM UserInfo INNER JOIN User where User.id=UserInfo.user_id and User.id='$id';");
+		$mysqli->query("DELETE FROM Address WHERE userinfo_id = '$id';");
+		$mysqli->query("DELETE FROM UserInfo WHERE user_id = '$id';");
+		$mysqli->query("DELETE FROM User WHERE id = '$id';");
 		
 		return $mysqli->affected_rows;
 	}
