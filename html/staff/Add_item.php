@@ -16,7 +16,7 @@ if($mysqli->connect_error)
 	$color = $mysqli->escape_string($_POST['color']);
 	$price = $mysqli->escape_string($_POST['price']);
 	$supplier_id = $mysqli->escape_string($_POST['supplier_id']);
-	$Url = "img/" . $_FILES["file"]["name"];
+	$Url = "http://51.254.181.89/staff/img/" . $_FILES["file"]["name"];
 	$urlInsert = $mysqli->escape_string($Url);
 	$categoryName = $mysqli->escape_string($_POST['category']);
 	$categoryID = $mysqli->query("SELECT id FROM Category WHERE category_name = '$categoryName' LIMIT 1;")->fetch_assoc()['id'];
