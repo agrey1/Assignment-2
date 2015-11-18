@@ -14,6 +14,18 @@ require_once('../../include/staff.php');
 $title = "Customers";
 
 include('../../include/wrapperstart.php');
+
+function isdateValid($date)
+{
+	if(strlen($date)!=10){
+		return false;
+	}
+    $d = DateTime::createFromFormat('Y-m-d', $date);
+    return $d && $d->format('Y-m-d') == $date;
+}
+
+
+
 ?>
 <script src="js/jquery.js" type="text/javascript"></script>
 <script src="js/jquery.maskedinput.js" type="text/javascript"></script>
@@ -93,8 +105,7 @@ if(isset($_POST['fname']))
 	}
 }elseif ($_POST['edit']){
 	$staff = new Staff($mysqli);
-//debug
-printf("Select returned %d rows. <br/>", $result->num_rows);
+
 
 $id=$_REQUEST['id'];
 $_SESSION['user_id'] = $id;
@@ -110,15 +121,15 @@ if ($row!=null) {
      <form action="/staff/customers.php" method="POST">
              <div class="form-group">
                     <label for="first_name"> First Name: </label>  
-                    <input type="text" name="first_name" size="25" class="form-control" value="<?php echo $row["first_name"];?>" required>
+                    <input type="text" name="first_name" maxlength="20" class="form-control" value="<?php echo $row["first_name"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="last_name"> Last Name: </label>  
-                    <input type="text" name="last_name" size="25" class="form-control" value="<?php echo $row["last_name"];?>" required>
+                    <input type="text" name="last_name" maxlength="20" class="form-control" value="<?php echo $row["last_name"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="nationality"> Nationality: </label>  
-                    <input type="text" name="nationality" class="form-control" value="<?php echo $row["nationality"];?>" required>
+                    <input type="text" name="nationality" maxlength="20" class="form-control" value="<?php echo $row["nationality"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="gender"> Gender: </label>  
@@ -132,12 +143,12 @@ if ($row!=null) {
 					 </select>  
                 </div>
                 <div class="form-group">
-                    <label for="dob"> Date of Birth: </label>  
-                    <input id="dob" name="dob" type="text" style="width:100px;" class="form-control" value="<?php echo $row["dob"];?>" required>
+                    <label for="dob"> Date of Birth (mm/dd/yy): </label>  
+                    <input id="dob" name="dob" maxlength="10" type="text" style="width:100px;" class="form-control" value="<?php echo $row["dob"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="password"> Password: </label>  
-                    <input id="password"  name='password' type="password" style="width:100px;" class="form-control" value="">
+                    <input id="password"  maxlength="20" name='password' type="password" style="width:100px;" class="form-control" value="">
                 </div>
 
                 <button type="submit" name="editvalues" value="Edit Values" class="btn btn-default">Edit Values</button>
@@ -186,7 +197,12 @@ if ($row!=null) {
 
     $dateFormated = explode("/", $mysqli->escape_string($_REQUEST['dob']));
     $date = $dateFormated[2].'-'.$dateFormated[0].'-'.$dateFormated[1];
-	
+	//Year-day-month
+	if (!isdateValid($date)){
+		echo "$date <br/>";
+		echo "Input date is not valid";
+		exit();
+	}
 	
 	$user_id=$mysqli->escape_string($id);
 	$first_name=$mysqli->escape_string($_REQUEST['first_name']);
@@ -194,10 +210,18 @@ if ($row!=null) {
 	$gender=$mysqli->escape_string($_REQUEST['gender']);
 	$nationality=$mysqli->escape_string($_REQUEST['nationality']);
 	
+	if(strlen($user_id)>20 || strlen($first_name)>20 || strlen($last_name)>20 || strlen($nationality)>20 ){
+		echo "Input String too long > 20 Chars. Reconsider input please...";
+		exit();
+	}
 	if($_REQUEST['password']==""){
 	$result=$staff->updateCustomer($first_name, $last_name,$gender, $nationality, $date, $user_id);
 	}else{
 	$password=$mysqli->escape_string($_REQUEST['password']);
+	if(strlen($password)>20){
+	echo "Input password too long > 20 Chars. Reconsider input please...";
+	exit();
+	}
 	$result=$staff->updateCustomerPsw($first_name, $last_name, $gender, $nationality, $date, $password, $user_id);
 	}
 	

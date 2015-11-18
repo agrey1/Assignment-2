@@ -1,11 +1,7 @@
 <?php
-
 $title = "Customer Orders";
-
 include('../../include/wrapperstart.php');
-
 $result = $mysqli->query("SELECT * FROM `Order`;");
-
 ?>
 
 <div class="table-responsive">
@@ -18,6 +14,7 @@ $result = $mysqli->query("SELECT * FROM `Order`;");
 				<th>Date Dispatched</th>
 				<th>Status</th>
 				<th>Delete</th>
+				<th>Edit</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -59,6 +56,9 @@ $result = $mysqli->query("SELECT * FROM `Order`;");
 					<td><?php echo $row['status']; ?></td>
 					<td>
 						<a href="Delete_order.php?id=<?php echo $row["id"]; ?>">Delete</a><br>
+					</td>
+					<td>
+						<a href="editOrder.php?id=<?php echo $row["id"]; ?>">Edit</a><br>
 					</td>
 				</tr>
 				

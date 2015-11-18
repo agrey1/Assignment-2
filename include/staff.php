@@ -29,12 +29,48 @@ class  Staff
 		return $result;
 	}
 	public function deleteCustomer($id){
+		/*******DEBUUG ***/
+	//ini_set("log_errors", 1);
+	//ini_set("error_log", "/tmp/php-error.log");
+	/****** END DEBUG*****/
 	
 		$mysqli =$this->mysqli;
 		
-		$mysqli->query("DELETE UserInfo, User FROM UserInfo INNER JOIN User where User.id=UserInfo.user_id and User.id='$id';");
+		$test=$mysqli->query("SELECT id, delivery_id from `Order` where Order.user_id='$id';");
 		
-		return $mysqli->affected_rows;
+		if($test->num_rows != 0){
+			$array=array();
+			$count=0;
+			while ($row = $test->fetch_assoc()) {
+				
+				$mysqli->autocommit(false);
+				$orderid=$row["id"];
+				$deliveryid=$row["delivery_id"];
+					$mysqli->query("DELETE FROM Order_shoe where Order_shoe.order_id='$orderid';");
+					$mysqli->query("DELETE FROM `Order` where `Order`.`user_id`='$id' and `Order`.`delivery_id`='$deliveryid';");
+					$mysqli->query("DELETE FROM Delivery where Delivery.id='$deliveryid';");
+					
+					$resultfirst=$mysqli->commit();
+						if($resultfirst==false){
+						$mysqli->rollback();
+						return $resultfirst;
+						}
+			}
+		}
+	
+		$mysqli->autocommit(false);
+            
+            $mysqli->query("DELETE FROM Address WHERE userinfo_id = '$id';"); 
+            $mysqli->query("DELETE FROM UserInfo WHERE user_id = '$id';"); 
+			$mysqli->query("DELETE FROM User WHERE id = '$id';");
+			
+		$result=$mysqli->commit();
+        if($result==false){
+		 $mysqli->rollback();
+		}
+		
+		return $result;
+	
 	}
 	
 	public function updateCustomer($first_name, $last_name, $gender, $nationality, $date, $id){

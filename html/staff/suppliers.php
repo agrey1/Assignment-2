@@ -1,4 +1,8 @@
 <?php
+/*******DEBUUG ***/
+	//~ ini_set("log_errors", 1);
+	//~ ini_set("error_log", "/tmp/php-error.log");
+	/****** END DEBUG*****/
 //Check access rights for this page.
 session_start();
 if($_SESSION['role'] < 3)
@@ -11,6 +15,30 @@ require_once('../../include/suppliers.php');
 $title = "Suppliers";
 
 include('../../include/wrapperstart.php');
+
+function isdateValid($date)
+{
+	if(strlen($date)!=10){
+		return false;
+	}
+    $d = DateTime::createFromFormat('Y-m-d', $date);
+    return $d && $d->format('Y-m-d') == $date;
+}
+function ispostcodeValid($postcode)
+{
+    
+    if(strlen($postcode)<=7  && preg_match("/^[a-zA-Z0-9 ]+$/", $postcode) == 1) {
+	return true;
+	}
+    
+}
+function isphonenumberValid($phonenumber){
+	//~ $test=preg_match("/^[0-9 ]+$/", $phonenumber) == 1;
+	//~ echo "$test<br/>";
+	if(strlen($phonenumber)<=16  && preg_match("/^[0-9 ]+$/", $phonenumber) == 1) {
+	return true;
+	}
+}
 ?>
 <script src="js/jquery.js" type="text/javascript"></script>
 <script src="js/jquery.maskedinput.js" type="text/javascript"></script>
@@ -122,36 +150,36 @@ if(isset($_POST['fname'])){
      <form action="/staff/suppliers.php" method="POST">
              <div class="form-group">
                     <label for="first_name"> Supplier Name: </label>  
-                    <input type="text" name="supplier_name" style="width:250px;" class="form-control" required>
+                    <input type="text" name="supplier_name" maxlength="20" style="width:250px;" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label for="last_name"> Phone Number: </label>  
-                    <input id="phonenumber" type="text" name="phonenumber" style="width:250px;" class="form-control" required>
+                    <input id="phonenumber" type="text"  maxlength="16" name="phonenumber" style="width:250px;" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label for="nationality"> Email: </label>  
-                    <input type="text" name="email" class="form-control" style="width:250px;" required>
+                    <input type="text" name="email" maxlength="20" class="form-control" style="width:250px;" required>
                 </div>
 				<h3>Address:</h3>
                 <div class="form-group">
                     <label for="first_line"> First line: </label>  
-                    <input  name="first_line" type="text" style="width:250px;"class="form-control" required>
+                    <input  name="first_line" type="text" maxlength="20" style="width:250px;"class="form-control" required>
                 </div>   
                 <div class="form-group">
                     <label for="second_line"> Second line: </label>  
-                    <input name='second_line' type="text" style="width:250px;" class="form-control" required>
+                    <input name='second_line' type="text" maxlength="20" style="width:250px;" class="form-control" required>
                 </div>
                  <div class="form-group">
                     <label for="postcode"> Postcode: </label>  
-                    <input id="postcode"  name='postcode' type="text" size="6" style="width:100px;" class="form-control" required>
+                    <input id="postcode"  name='postcode' maxlength="7" type="text" size="6" style="width:100px;" class="form-control" required>
                 </div>
                  <div class="form-group">
                     <label for="city"> City: </label>  
-                    <input  name='city' type="text" size="25" style="width:250px;" class="form-control" required>
+                    <input  name='city' type="text" maxlength="20" style="width:250px;" class="form-control" required>
                 </div>
 				 <div class="form-group">
                     <label for="country"> Country: </label>  
-                    <input name='country' type="text" size="25" style="width:250px;" class="form-control" required>
+                    <input name='country' type="text" maxlength="20" style="width:250px;" class="form-control" required>
                 </div>
                 <button type="submit" name="submitsupplier" value="Edit Values" class="btn btn-default">Add Supplier</button>
             </form>
@@ -174,6 +202,21 @@ if(isset($_POST['fname'])){
 	$postcode=$mysqli->escape_string($_REQUEST['postcode']);
 	$city=$mysqli->escape_string($_REQUEST['city']);
 	$country=$mysqli->escape_string($_REQUEST['country']);
+	
+	if(strlen($supplier_name)>20 || strlen($email)>20 || strlen($first_line)>20 || strlen($second_line)>20 || strlen($city)>20 || strlen($country)>20){
+		echo "Input String too long, possibly > 20 Chars. Reconsider input please...";
+		exit();
+	}
+	if(!ispostcodeValid($postcode)){
+		echo "Postcode format wrong or length exceeded";
+		exit();
+	}
+	if(!isphonenumberValid($phonenumber)){
+	echo "Phone number format wrong or length exceeded";
+		exit();
+	}
+	
+	
 	$result=$suppliers->addSupplier($supplier_name, $phonenumber, $email ,$first_line,$second_line,$postcode ,$city ,$country);
 	
 	//returns boolean
@@ -207,23 +250,23 @@ if(isset($_POST['fname'])){
 				<form action="/staff/suppliers.php" method="POST">
 				 <div class="form-group">
                     <label for="first_line"> First Line: </label>  
-                    <input type="text" name="first_line" style="width:250px;" class="form-control" value="<?php echo $row["first_line"];?>" required>
+                    <input type="text" name="first_line" maxlength="20" style="width:250px;" class="form-control" value="<?php echo $row["first_line"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="second_line"> Second Line: </label>  
-                    <input type="text" name="second_line" style="width:250px;" class="form-control" value="<?php echo $row["second_line"];?>" required>
+                    <input type="text" name="second_line" maxlength="20" style="width:250px;" class="form-control" value="<?php echo $row["second_line"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="postcode"> Postcode: </label>  
-                    <input id="postcode"  name='postcode'  type="text" size="6" style="width:100px;" class="form-control" value="<?php echo $row["postcode"]; ?>" required>
+                    <input id="postcode"  name='postcode'  maxlength="7" type="text" size="6" style="width:100px;" class="form-control" value="<?php echo $row["postcode"]; ?>" required>
                 </div>
                  <div class="form-group">
                     <label for="city"> City: </label>  
-                    <input  name='city' type="text" size="25" style="width:250px;" class="form-control" value="<?php echo $row["city"]; ?>" required>
+                    <input  name='city' type="text" maxlength="20" style="width:250px;" class="form-control" value="<?php echo $row["city"]; ?>" required>
                 </div>
 				 <div class="form-group">
                     <label for="country"> Country: </label>  
-                    <input name='country' type="text" size="25" style="width:250px;" class="form-control" value="<?php echo $row["country"]; ?>" required>
+                    <input name='country' type="text" maxlength="20" style="width:250px;" class="form-control" value="<?php echo $row["country"]; ?>" required>
                 </div>
                 <button type="submit" name="editaddress" class="btn btn-default">Edit Supplier Address</button>
 					<input type="hidden" name="addressid" value="<?php echo $row['address_id'];?>">
@@ -236,15 +279,15 @@ if(isset($_POST['fname'])){
 			 <form action="/staff/suppliers.php" method="POST">
 				 <div class="form-group">
                     <label for="supplier_name"> Supplier Name: </label>  
-                    <input type="text" name="supplier_name" style="width:250px;" class="form-control" value="<?php echo $row["supplier_name"];?>" required>
+                    <input type="text" name="supplier_name" style="width:250px;" maxlength="20" class="form-control" value="<?php echo $row["supplier_name"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="phonenumber"> Phone Number: </label>  
-                    <input type="text" name="phonenumber" style="width:250px;" class="form-control" value="<?php echo $row["phonenumber"];?>" required>
+                    <input  type="text" name="phonenumber" style="width:250px;" maxlength="16" class="form-control" value="<?php echo $row["phonenumber"];?>" required>
                 </div>
                 <div class="form-group">
                     <label for="email"> Email: </label>  
-                    <input type="text" name="email" style="width:250px;" class="form-control" value="<?php echo $row["email"];?>" required>
+                    <input type="text" name="email" style="width:250px;" maxlength="20" class="form-control" value="<?php echo $row["email"];?>" required>
                 </div>
 					<input type="hidden" name="id" value="<?php echo $row['id'];?>">
                 <button type="submit" name="editsupplier" class="btn btn-default">Edit Supplier</button>
@@ -270,6 +313,16 @@ if(isset($_POST['fname'])){
 	$country=$mysqli->escape_string($_REQUEST['country']);
 	
 	$addressid=$mysqli->escape_string($_REQUEST['addressid']); //This is probably not necessary
+	 
+	if(!ispostcodeValid($postcode)){
+		echo "Postcode format wrong or length exceeded";
+		exit();
+	}
+	if(strlen($first_line)>20 || strlen($second_line)>20 || strlen($city)>20 || strlen($country)>20){
+		echo "Input String too long, possibly > 20 Chars. Reconsider input please...";
+		exit();
+	}
+	
 	
 	$result=$suppliers->updateSupplierAddress($addressid,$first_line,$second_line,$city,$postcode,$country);
 	if($result == 0){
@@ -294,6 +347,15 @@ if(isset($_POST['fname'])){
 	$phonenumber=$mysqli->escape_string($_REQUEST['phonenumber']);
 	$email=$mysqli->escape_string($_REQUEST['email']);
 	
+	if(strlen($supplier_name)>20 || strlen($email)>20 ){
+		echo "Input String too long, possibly > 20 Chars. Reconsider input please...";
+		exit();
+	}
+	if(!isphonenumberValid($phonenumber)){
+	echo "Phonenumber format wrong or length exceeded";
+		exit();
+	}
+	
 	$result=$suppliers->updateSupplier($id, $supplier_name, $phonenumber, $email);
 	
 	if($result == 0){
@@ -311,7 +373,8 @@ if(isset($_POST['fname'])){
 	$suppliers = new Supplier($mysqli);
 	
 	$id=$mysqli->escape_string($_REQUEST['id']);
-	$addressid=$id=$mysqli->escape_string($_REQUEST['addressid']);
+	$addressid=$mysqli->escape_string($_REQUEST['addressid']);
+	//error_log("LOG " . (string)$id );
 	$result=$suppliers->deleteSupplier($id, $addressid);
 	
 	//returns boolean
@@ -327,7 +390,7 @@ if(isset($_POST['fname'])){
 jQuery(function($)
 {
 	$("#postcode").mask("*** ***",{placeholder:"___ ___"});
-	$("#phonenumber").mask("(999) 999-9999");
+	$("#phonenumber").mask("0099 9999999999");
 });
 </script>
 <?php
